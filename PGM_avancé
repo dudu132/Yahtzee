@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Nov  8 15:58:32 2021
+
+@author: cyrilbui
+"""
+
+import numpy as np
+
+
+#--------------------------------------------------------------------------------
+#6**5=7776 combinaisons
+#Sans l'ordre : 252, pkoi?
+#--------------------------------------------------------------------------------
+
+def toutes_les_combis():
+    L=[]
+    l=[0,0,0,0,0]
+    for a in range(1,7):
+        l[0]=a
+        for b in range(1,7):
+            l[1]=b
+            for c in range(1,7):
+                l[2]=c
+                for d in range(1,7):
+                    l[3]=d
+                    for e in range(1,7):
+                        l[4]=e
+                        L.append(l.copy())
+    return(L)
+                        
+ 
+
+def valeurs(l):
+    v=set()
+    for k in l:
+        v.add(k)
+    return(v)
+
+def compare_valeurs(l1,l2):
+    t2=l2.copy()
+    for i in l1:
+        for j in t2:
+            if i==j:
+                t2.remove(j)
+                break
+    if t2==[]:
+        return(True)
+    else:
+        return(False)
+    
+    
+def tri_combi(L):
+    L2=[]
+    n=len(L)
+    for i in range(n):
+        c=0
+        for j in range(i,n):
+            if i!=j and compare_valeurs(L[i],L[j])==False:
+                c+=1
+        if c==n-i-1:
+            L2.append(L[i])
+            
+    return(L2)
+
+
+
+#print(len(tri_combi()))
+
+
+
+#--------------------------------------------------------------------------------
+#Calcul des espérances
+#--------------------------------------------------------------------------------
+#Renvoie la liste de tous les sous-ensembles de taille n d'une liste
+def n_uplet(valeurDes,n):
+    N=5
+    L=[]
+    if n==1:
+        L=[[k] for k in range(N)]
+    else:
+        L2=n_uplet(valeurDes,n-1)
+        for k in range(N):
+            for l in L2:
+                if k not in l:
+                    L.append([k]+l)
+    return(tri_combi(L))
+    
+#Verifie que L1 est dans L2
+def list_in_list(L1,L2):
+    e1=L1.copy()
+    e2=L2.copy()
+    for k in e1:
+        if k in e2:
+            e1.remove(k)
+            e2.remove(k)
+    if e1==[]:
+        return(True)
+    return(False)
+    
+    
+#Renvoie la liste de toutes les combinaisons atteignables par relance de valeurDes    
+def combis_relances(valeurDes,nb_relances):
+    L=[]
+    L0=toutes_les_combis()
+    if nb_relances==0:
+        L.append(valeurDes)
+    if nb_relances==1:
+        for k in range(6):
+            j=5-k
+            Lj=n_uplet(valeurDes,j)
+            for L1 in Lj:
+                L11=[valeurDes[i] for i in L1]
+                for L2 in L0:
+                    if list_in_list(L11,L2):
+                        L.append(L2)
+    if nb_relances==2:
+       L01=combis_relances(valeurDes,1)
+       for k in L01:
+           L.append(combis_relances(k,1))
+    return(L)
+#--------------------------------------------------------------------------------
+#Création du tableau
+#--------------------------------------------------------------------------------
+
+
+
+def tableau_vierge():
+    T=np.zeros((252,13))
+    L=toutes_les_combis()
+    for k in range(252):
+        T[k,0]=str(L[k])
+    return(T)
+
+
+
+
+
+
+
+
+
+
+
